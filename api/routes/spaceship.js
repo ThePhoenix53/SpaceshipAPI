@@ -1,13 +1,22 @@
 //Imports
-const express = require('express')
+const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
+
+const Spaceship = require('../models/spaceship')
 
 //GET Request Handeler
 //Returns all space ships
 router.get('/', (req, res, next) =>{
-    res.status(200).json({
-        message: "Handeling GET for spaceship"
+    Spaceship.find({})
+    .exec()
+    .then(docs => {
+        res.status(200).json(docs);
+    })
+    .catch(err => {
+        res.status(500)
     });
+    
 });
 
 //POST Request Handeler

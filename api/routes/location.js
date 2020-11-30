@@ -1,26 +1,47 @@
 //Imports
-const express = require('express')
+const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
+
+const Location = require('../models/location');
 
 //GET request handeler
 //Get all the locations on the system
 router.get('/', (req, res, next) =>{
-    res.status(200).json({
-        message: "Handeling GET for location"
+    //find all spaceships
+    Location.find({})
+    .exec()
+    .then(docs => {
+        res.status(200).json(docs);   
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json({error: err})
     });
 });
 
 //POST request handler
 //Make a new location
 router.post('/', (req, res, next) =>{
-    const location = {
+    //construct new location
+    const location = new Location({
+        _id: new mongoose.Types.ObjectId(),
         cityName: req.body.cityName,
-        planetName: req.body.planetId,
+        planetName: req.body.planetName,
         capacity: req.body.capacity
-    }
-    res.status(201).json({
-        message: "Handeling POST for location",
-        createdLocation: location
+    })
+
+    //save new location
+    location.save()
+    .then(result => {
+        console.log(result);
+        res.status(201).json({
+            message: 'Created location successfully',
+            createdLocation: result
+        });
+    }).catch(err => {
+        console.log(err);
+        res.status(500).json({error: err});
     });
 });
 

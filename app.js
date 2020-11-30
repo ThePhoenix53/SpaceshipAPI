@@ -2,9 +2,16 @@ const express = require('express');
 const app = express(); //use express
 const morgan = require('morgan');
 const bodyParser = require('body-parser')
+const mongoose = require('mongoose')
 
 const spaceshipRoutes = require('./api/routes/spaceship');
 const locationRoutes = require('./api/routes/location');
+
+//Connecting to Database
+mongoose.connect('mongodb+srv://' + process.env.MONGO_ATLAS_UN + ':' + process.env.MONGO_ATLAS_PW +'@node-rest-api.e1o1b.mongodb.net/SANDBOX?retryWrites=true&w=majority', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+});
 
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({extended: false}));
