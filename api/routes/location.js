@@ -74,11 +74,28 @@ router.post('/', (req, res, next) =>{
 });
 
 //GET request handler
-//get details of one planet
+//get details of 1 planet
 router.get('/:planetId', (req, res, next) =>{
     const id = req.params.planetId;
-    res.status(201).json({
-        message: "Handeling POST for location: " + id
+    //find planet with id on database
+    Location.findById(id, 'cityName planetName _id capacity')
+    .exec()
+    .then(planet => {
+        console.log(planet);
+        if (planet) {
+            res.status(200).json({
+                cityName: planet.cityName,
+                planetName: planet.planetName,
+                capacity: planet.capacity
+            });
+        } else {
+            //No planet found
+            res.status(404).json({message: 'No vaild entry found for this ID'});
+        }
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json({error: err})
     });
 });
 
