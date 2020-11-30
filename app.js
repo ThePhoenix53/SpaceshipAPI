@@ -4,6 +4,7 @@ const app = express(); //use express
 const spaceshipRoutes = require('./api/routes/spaceship');
 const locationRoutes = require('./api/routes/location');
 
+//Request handeling routes
 app.use('/spaceship', spaceshipRoutes);
 app.use('/location', locationRoutes);
 
