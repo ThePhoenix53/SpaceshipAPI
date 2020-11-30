@@ -1,8 +1,11 @@
 const express = require('express');
 const app = express(); //use express
+const morgan = require('morgan');
 
 const spaceshipRoutes = require('./api/routes/spaceship');
 const locationRoutes = require('./api/routes/location');
+
+app.use(morgan('dev'));
 
 //Request handeling routes
 app.use('/spaceship', spaceshipRoutes);
