@@ -13,8 +13,15 @@ router.get('/', (req, res, next) =>{
 //POST Request Handeler
 //Builds new space ship
 router.post('/', (req, res, next) =>{
+    const spaceship = {
+        name: req.body.name,
+        model: req.body.model,
+        location: req.body.location,
+        status: req.body.status
+    }
     res.status(201).json({
-        message: "Handeling POST for spaceship"
+        message: "Handeling POST for spaceship",
+        createdSpaceship: spaceship
     });
 });
 

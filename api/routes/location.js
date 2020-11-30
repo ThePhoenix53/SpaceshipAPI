@@ -13,6 +13,11 @@ router.get('/', (req, res, next) =>{
 //POST request handler
 //Make a new location
 router.post('/', (req, res, next) =>{
+    const location = {
+        cityName: req.body.cityName,
+        planetName: req.body.planetId,
+        capacity: req.body.capacity
+    }
     res.status(201).json({
         message: "Handeling POST for location"
     });

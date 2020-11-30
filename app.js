@@ -1,11 +1,14 @@
 const express = require('express');
 const app = express(); //use express
 const morgan = require('morgan');
+const bodyParser = require('body-parser')
 
 const spaceshipRoutes = require('./api/routes/spaceship');
 const locationRoutes = require('./api/routes/location');
 
 app.use(morgan('dev'));
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
 
 //Request handeling routes
 app.use('/spaceship', spaceshipRoutes);
