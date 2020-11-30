@@ -102,9 +102,15 @@ router.get('/:planetId', (req, res, next) =>{
 //DELETE request handler
 //delete given location
 router.delete('/:planetId', (req, res, next) =>{
-    const id = req.params.planetId;
-    res.status(201).json({
-        message: "Handeling DELETE for location: " + id
+    const id = req.params.planetId
+    //delete location off the server
+    Location.deleteOne({_id: id}).exec()
+    .then(result => {
+        res.status(200).json({ message: 'Location deleted' });
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json({error: err})
     });
 });
 
