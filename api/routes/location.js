@@ -19,7 +19,8 @@ router.post('/', (req, res, next) =>{
         capacity: req.body.capacity
     }
     res.status(201).json({
-        message: "Handeling POST for location"
+        message: "Handeling POST for location",
+        createdLocation: location
     });
 });
 
