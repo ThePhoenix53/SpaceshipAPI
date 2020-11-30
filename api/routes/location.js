@@ -8,11 +8,27 @@ const Location = require('../models/location');
 //GET request handeler
 //Get all the locations on the system
 router.get('/', (req, res, next) =>{
-    //find all spaceships
-    Location.find({})
+    //Find all locations
+    Location.find({}, 'cityName planetName _id capacity')
     .exec()
     .then(docs => {
-        res.status(200).json(docs);   
+        const response = {
+            //Format response
+            count: docs.length,
+            location: docs.map(doc => {
+                return {
+                    _id: doc._id,
+                    cityName: doc.cityName,
+                    planetName: doc.planetName,
+                    request: {
+                        type: 'GET',
+                        url: 'http://120.152.21.208/location/' + doc._id
+                    }
+                }
+            })
+        }
+        res.status(200).json(response);
+        
     })
     .catch(err => {
         console.log(err);
@@ -36,12 +52,24 @@ router.post('/', (req, res, next) =>{
     .then(result => {
         console.log(result);
         res.status(201).json({
+            //Formatting
             message: 'Created location successfully',
-            createdLocation: result
+            createdLocation: {
+                id: result._id,
+                cityName: result.cityName,
+                planetName: result.planetName,
+                capacity: result.capacity,
+                request: {
+                    type: 'GET',
+                    url: 'http://120.152.21.208/location/' + result._id
+                }
+            }
         });
     }).catch(err => {
         console.log(err);
-        res.status(500).json({error: err});
+        res.status(500).json({
+            error: err
+        })
     });
 });
 
