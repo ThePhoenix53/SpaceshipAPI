@@ -100,9 +100,25 @@ router.get('/:spaceshipId', (req, res, next) =>{
 //PATCH request handler
 //update the status of a single ship
 router.patch('/:spaceshipId', (req, res, next) =>{
-    const id = req.params.productId;
-    res.status(200).json({
-        message: "Handeling PATCH for spaceship: " + id
+    //Update status of spaceship
+    const id = req.params.spaceshipId
+    Spaceship.updateOne({_id: id}, { $set: { status: req.body.status }})
+    .exec()
+    .then(result => {
+        console.log(result);
+        res.status(200).json({
+            message: "Spaceship is now " + req.body.status,
+            request: {
+                type: 'GET',
+                url: 'http://120.152.21.208/spaceship/' + id
+            }
+        });
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json({
+            error: err
+        })
     });
 });
 
