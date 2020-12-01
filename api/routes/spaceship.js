@@ -48,13 +48,14 @@ router.post('/', (req, res, next) =>{
         location: req.body.location,
         status: req.body.status
     });
-    
+
     spaceship.save()
     .then(result => {
         //Respons to request
         res.status(201).json({
             message: 'Created spaceship successfully',
             createdSpaceship: {
+                id: result._id,
                 name: result.name,
                 model: result.model,
                 location: result.location,
@@ -76,9 +77,23 @@ router.post('/', (req, res, next) =>{
 //GET request handler for spaceships
 //retuns single spaceship infomation
 router.get('/:spaceshipId', (req, res, next) =>{
-    const id = req.params.productId;
-    res.status(200).json({
-        message: "Handeling GET for spaceship: " + id
+    const id = req.params.spaceshipId
+
+    //Find spaceship by id
+    Spaceship.findById(id, 'name model _id location status')
+    .exec()
+    .then(doc => {
+        console.log(doc);
+        if(doc) {
+            res.status(200).json(doc);
+        } else {
+            res.status(404).json({message: 'No vaild entry found for this ID'});
+        }
+        
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json({error: err});
     });
 });
 
