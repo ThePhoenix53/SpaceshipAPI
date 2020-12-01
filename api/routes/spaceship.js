@@ -125,9 +125,24 @@ router.patch('/:spaceshipId', (req, res, next) =>{
 //DELETE request handeler
 //delete spaceship from database
 router.delete('/:spaceshipId', (req, res, next) =>{
-    const id = req.params.productId;
-    res.status(200).json({
-        message: "Handeling DELETE for spaceship: " + id
+    const id = req.params.spaceshipId
+    Spaceship.deleteOne({_id: id})
+    .exec()
+    .then(result => {
+        res.status(200).json({
+            message: 'Spaceship deleted',
+            request: {
+                type: 'POST',
+                url: 'http://120.152.21.208/spaceship/',
+                body: {name: 'String', model: 'String', location: 'String', status: 'String'}
+            }
+        });
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json({
+            error: err
+        })
     });
 });
 
