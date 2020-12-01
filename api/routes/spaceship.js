@@ -5,6 +5,9 @@ const mongoose = require('mongoose');
 
 const Spaceship = require('../models/spaceship')
 
+//Used for status validation
+const stringStatus = ["decommissioned", "maintenance", "operational"]
+
 //GET Request Handeler
 //Returns all space ships
 router.get('/', (req, res, next) =>{
@@ -100,6 +103,12 @@ router.get('/:spaceshipId', (req, res, next) =>{
 //PATCH request handler
 //update the status of a single ship
 router.patch('/:spaceshipId', (req, res, next) =>{
+
+    //Check if valid status
+    if (!stringStatus.includes(req.body.status)) {
+        return res.status(400).json({message: "Not a valid Status, choose: {operational}{maintenance}{decommissioned}"});
+    }
+
     //Update status of spaceship
     const id = req.params.spaceshipId
     Spaceship.updateOne({_id: id}, { $set: { status: req.body.status }})
