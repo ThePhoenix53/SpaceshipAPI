@@ -3,10 +3,11 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 
-const Spaceship = require('../models/spaceship')
+const Spaceship = require('../models/spaceship');
+const Location = require('../models/location');
 
 //Used for status validation
-const stringStatus = ["decommissioned", "maintenance", "operational"]
+const stringStatus = ["decommissioned", "maintenance", "operational"];
 
 //GET Request Handeler
 //Returns all space ships
@@ -39,7 +40,7 @@ router.get('/', (req, res, next) =>{
         })
         .catch(err => {
             console.log(err);
-            res.status(500).json({error: err})
+            res.status(500).json({error: err});
         });
     } else {
         //Find all spaceships in database
@@ -76,21 +77,54 @@ router.get('/', (req, res, next) =>{
 //POST Request Handeler
 //Builds new space ship
 router.post('/', (req, res, next) =>{
-    const spaceship = new Spaceship({
-        _id: new mongoose.Types.ObjectId(),
-        name: req.body.name,
-        model: req.body.model,
-        location: req.body.location,
-        status: req.body.status
-    });
+    //First Check that the location exists
+    Location.findById(req.body.location)
+    .then(location => {
+        if (!location) {
+            throw new Error(res.status(404).json({
+                message: "Location not found"
+            }));
+        } else {
+            //Then check how many spaceships are at that location
+            Spaceship.find({location: location._id}).exec()
+            .then(spaceshipsFound => {
+                if (spaceshipsFound.length >= location.capacity){
+                    throw new Error(res.status(400).json({message: "Location full"}));
+                }
+            })
+            .catch(err => {
+                if (!res.writableEnded){
+                    res.status(500).json({
+                        error: err
+                    })
+                }
+            });
+        }
+        
+        //Finally, check if they status is a valid status
+        if (!stringStatus.includes(req.body.status)) {
+            throw new Error(res.status(400).json({
+                message: "Not a valid Status, choose: {operational}{maintenance}{decommissioned}"
+            }));
+        }
 
-    spaceship.save()
+        //Construct spaceship
+        const spaceship = new Spaceship({
+            _id: new mongoose.Types.ObjectId(),
+            name: req.body.name,
+            model: req.body.model,
+            location: req.body.location,
+            status: req.body.status
+        });
+
+        //Save spaceshit to database
+        return spaceship.save()
+    })
     .then(result => {
         //Respons to request
         res.status(201).json({
             message: 'Created spaceship successfully',
             createdSpaceship: {
-                id: result._id,
                 name: result.name,
                 model: result.model,
                 location: result.location,
@@ -104,7 +138,9 @@ router.post('/', (req, res, next) =>{
     })
     .catch(err => {
         if (!res.writableEnded){
-            res.status(500).json({error: err});
+            res.status(500).json({
+                error: err
+            })
         }
     });
 });
