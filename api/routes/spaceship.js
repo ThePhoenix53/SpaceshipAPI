@@ -11,34 +11,66 @@ const stringStatus = ["decommissioned", "maintenance", "operational"]
 //GET Request Handeler
 //Returns all space ships
 router.get('/', (req, res, next) =>{
-    //Find all spaceships in database
-    Spaceship.find({}, 'name model _id location status')
-    .exec()
-    .then(docs => {
-        const response = {
-            //Format response
-            count: docs.length,
-            spaceship: docs.map(doc => {
-                return {
-                    _id: doc._id,
-                    name: doc.name,
-                    model: doc.model,
-                    location: doc.location,
-                    status: doc.status,
-                    request: {
-                        type: 'GET',
-                        url: 'http://120.152.21.208/spaceship/' + doc._id
+    //Check if location is given
+    if (req.body.location) {
+        //Find spaceships in a location
+        Spaceship.find({location: req.body.location}, 'name model _id location status')
+        .exec()
+        .then(docs => {
+            const response = {
+                //Format response
+                count: docs.length,
+                spaceship: docs.map(doc => {
+                    return {
+                        _id: doc._id,
+                        name: doc.name,
+                        model: doc.model,
+                        location: doc.location,
+                        status: doc.status,
+                        request: {
+                            type: 'GET',
+                            url: 'http://120.152.21.208/spaceship/' + doc._id
+                        }
                     }
-                }
-            })
-        }
-        res.status(200).json(response);
-    
-    })
-    .catch(err => {
-        console.log(err);
-        res.status(500).json({error: err})
-    });
+                })
+            }
+            res.status(200).json(response);
+        
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({error: err})
+        });
+    } else {
+        //Find all spaceships in database
+        Spaceship.find({}, 'name model _id location status')
+        .exec()
+        .then(docs => {
+            const response = {
+                //Format response
+                count: docs.length,
+                spaceship: docs.map(doc => {
+                    return {
+                        _id: doc._id,
+                        name: doc.name,
+                        model: doc.model,
+                        location: doc.location,
+                        status: doc.status,
+                        request: {
+                            type: 'GET',
+                            url: 'http://120.152.21.208/spaceship/' + doc._id
+                        }
+                    }
+                })
+            }
+            res.status(200).json(response);
+        
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({error: err})
+        });
+    }
 });
 
 //POST Request Handeler
