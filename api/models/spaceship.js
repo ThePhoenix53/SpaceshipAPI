@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 
+//Schema for spaceship model
 const spaceshipSchema = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
     name: {type: String, required: true},

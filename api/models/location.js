@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+//Schema for location model
 const locationSchema = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
     cityName: {type: String, required: true},
