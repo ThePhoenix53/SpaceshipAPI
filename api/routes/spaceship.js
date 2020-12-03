@@ -170,7 +170,7 @@ router.get('/:spaceshipId', (req, res, next) =>{
 
 //PATCH request handler
 //update the status of a single ship
-router.patch('/:spaceshipId', (req, res, next) =>{
+router.patch('/:spaceshipId/status', (req, res, next) =>{
 
     //Check if valid status
     if (!stringStatus.includes(req.body.status)) {
@@ -196,6 +196,80 @@ router.patch('/:spaceshipId', (req, res, next) =>{
         res.status(500).json({
             error: err
         })
+    });
+
+    //Below is a methode for updating more fields:
+    //Needs interable json array in request
+    // const updateOps = {};
+    // for (const ops of req.body) {
+    //     updateOps[ops.propName] = ops.value;
+    // }
+    // Product.update({_id: id}, { $set: updateOps}).exec().then().catch();
+});
+
+//PATCH request handler
+//update the location of the ship
+router.patch('/:spaceshipId/travel', (req, res, next) =>{
+
+    //First check if location exists
+    Location.findById(req.body.location)
+    .then(location => {
+        if (!location) {
+            throw new Error(res.status(404).json({
+                message: "Location not found"
+            }));
+        } else {
+            //Check if capacity is full
+            Spaceship.find({location: location._id}).exec()
+            .then(spaceshipsFound => {
+                if (spaceshipsFound.length >= location.capacity){
+                    throw new Error(res.status(400).json({message: "Destination location full"}));
+                }
+            }).catch(err => {
+                if (!res.writableEnded){
+                    console.log(err);
+                    res.status(500).json({error: err});
+                }
+            });
+
+            
+            const id = req.params.spaceshipId
+            //Check if spaceship is opperational
+            Spaceship.findById({_id: id}).exec()
+            .then(result => {
+                if (result && result.status === "operational") {
+
+                    //Update status of spaceship
+                    Spaceship.updateOne({_id: id}, { $set: { location: req.body.location }})
+                    .exec()
+                    .then(result => {
+                        console.log(result);
+                        res.status(200).json({
+                            message: "Spaceship is now in " + location.cityName + ", " + location.planetName,
+                            request: {
+                                type: 'GET',
+                                url: 'http://120.152.21.208/spaceship/' + id
+                            }
+                        });
+                    })
+                } else {
+                    throw new Error(res.status(400).json({message: "Ship not operational"}));
+                }
+            }).catch(err => {
+                if (!res.writableEnded){
+                    console.log(err);
+                    res.status(500).json({error: err});
+                }
+            });
+        }
+    })
+    .catch(err => {
+        if (!res.writableEnded){
+            console.log(err);
+            res.status(500).json({
+                error: err
+            });
+        }
     });
 });
 

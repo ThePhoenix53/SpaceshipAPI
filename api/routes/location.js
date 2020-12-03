@@ -20,6 +20,7 @@ router.get('/', (req, res, next) =>{
                     _id: doc._id,
                     cityName: doc.cityName,
                     planetName: doc.planetName,
+                    capacity: doc.capacity,
                     request: {
                         type: 'GET',
                         url: 'http://120.152.21.208/location/' + doc._id
