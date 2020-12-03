@@ -1,6 +1,10 @@
 # SpaceshipAPI
 Coding Challange Spaceship API
 
+## Accsess
+To accsess to server for testing or usage use the following link as the baselink:
+http://mkohlmann.com/
+
 ## Overview 
 This API is coded using Nodejs
 Packages used: express, body-parser, mongoose, morgan and nodemon
